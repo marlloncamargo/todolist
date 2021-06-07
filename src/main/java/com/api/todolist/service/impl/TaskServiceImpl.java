@@ -3,6 +3,9 @@ package com.api.todolist.service.impl;
 import com.api.todolist.entity.Task;
 import com.api.todolist.entity.TaskStatus;
 import com.api.todolist.entity.User;
+import com.api.todolist.mapper.TaskMapper;
+import com.api.todolist.model.TaskRequest;
+import com.api.todolist.model.TaskResponse;
 import com.api.todolist.repository.TaskRepository;
 import com.api.todolist.repository.UserRepository;
 import com.api.todolist.service.TaskService;
@@ -25,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
     private UserRepository userRepository;
 
     @Override
-    public List<Task> findByUser(TaskStatus status) throws Exception {
+    public List<TaskResponse> findByUser(TaskStatus status) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -34,25 +37,25 @@ public class TaskServiceImpl implements TaskService {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "status");
         if(user.getAdmin().equals(Boolean.TRUE)){
-            return filterList(repository.findAll(sort), status);
+            return TaskMapper.getTaskResponse(filterList(repository.findAll(sort), status));
         }
-        return filterList(repository.findByUser(user, sort), status);
+        return TaskMapper.getTaskResponse(filterList(repository.findByUser(user, sort), status));
     }
 
     @Override
-    public Task save(Task task) throws Exception {
+    public TaskResponse save(TaskRequest taskRequest) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
         User user = userRepository.findByUsername(currentPrincipalName)
                 .orElseThrow(() -> new Exception("User not found for this username: " + currentPrincipalName));
 
-        if (checkStatus(task.getStatus())){
-            task.setStatus(TaskStatus.PENDING);
+        if (checkStatus(taskRequest.getStatus())){
+            taskRequest.setStatus(TaskStatus.PENDING);
         }
 
-        task.setUser(user);
-        return repository.save(task);
+        Task task = TaskMapper.getTask(taskRequest, user);
+        return TaskMapper.getTaskResponse(repository.save(task));
     }
 
     @Override

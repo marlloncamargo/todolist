@@ -15,12 +15,12 @@ public class MyUserDetailsService implements UserDetailsService {
     
     @Autowired
     private UserRepository repository;
-    
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.api.todolist.entity.User user = repository.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found for this username: " + username));
-        return new User(user.getUsername(), "123456",
+        return new User(user.getUsername(), user.getPassword(),
                 new ArrayList<>());
     }
 }

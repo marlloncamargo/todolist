@@ -1,7 +1,5 @@
 package com.api.todolist.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -28,18 +26,15 @@ public class Task {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     @Column(name = "status", nullable = false)
     private TaskStatus status = TaskStatus.PENDING;
 
-    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name="user_id")
     private User user;

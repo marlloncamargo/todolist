@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
@@ -23,9 +22,6 @@ public class User {
 
     @Column(name = "admin_user", nullable = false)
     private Boolean admin = false;
-
-    @OneToMany(targetEntity=Task.class, mappedBy="user",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Task> tasks;
 
     public User(String username, String password, Boolean admin) {
         this.username = username;

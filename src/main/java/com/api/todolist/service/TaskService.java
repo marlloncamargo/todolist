@@ -2,6 +2,8 @@ package com.api.todolist.service;
 
 import com.api.todolist.entity.Task;
 import com.api.todolist.entity.TaskStatus;
+import com.api.todolist.model.TaskRequest;
+import com.api.todolist.model.TaskResponse;
 
 import java.util.List;
 
@@ -9,12 +11,12 @@ public interface TaskService {
     /**
     *
      */
-    List<Task> findByUser(TaskStatus status) throws Exception;
+    List<TaskResponse> findByUser(TaskStatus status) throws Exception;
 
     /**
      *
      */
-    Task save(Task task) throws Exception;
+    TaskResponse save(TaskRequest task) throws Exception;
 
     /**
      *
