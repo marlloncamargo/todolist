@@ -1,6 +1,5 @@
 package com.api.todolist.service;
 
-import com.api.todolist.entity.Task;
 import com.api.todolist.entity.TaskStatus;
 import com.api.todolist.model.TaskRequest;
 import com.api.todolist.model.TaskResponse;
@@ -26,5 +25,5 @@ public interface TaskService {
     /**
      *
      */
-    Task update(Long taskId, Task task) throws Exception;
+    TaskResponse update(Long taskId, TaskRequest taskRequest) throws Exception;
 }

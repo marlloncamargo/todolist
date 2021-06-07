@@ -1,7 +1,6 @@
 package com.api.todolist.controller;
 
 
-import com.api.todolist.entity.Task;
 import com.api.todolist.entity.TaskStatus;
 import com.api.todolist.model.TaskRequest;
 import com.api.todolist.model.TaskResponse;
@@ -29,9 +28,9 @@ public class TaskController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> saveTask(@RequestBody TaskRequest task) throws Exception {
-        TaskResponse response = taskService.save(task);
-        if (response == null) ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+    public ResponseEntity<?> saveTask(@RequestBody TaskRequest taskRequest) throws Exception {
+        TaskResponse response = taskService.save(taskRequest);
+        if (response == null) ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         return ResponseEntity.accepted().body(response);
     }
 
@@ -43,8 +42,8 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTask(@PathVariable(value = "id") Long taskId,
-                                        @RequestBody Task task) throws Exception {
+                                        @RequestBody TaskRequest taskRequest) throws Exception {
 
-        return ResponseEntity.ok(taskService.update(taskId, task));
+        return ResponseEntity.ok(taskService.update(taskId, taskRequest));
     }
 }

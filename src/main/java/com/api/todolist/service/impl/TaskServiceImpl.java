@@ -66,14 +66,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task update(Long taskId, Task task) throws Exception {
+    public TaskResponse update(Long taskId, TaskRequest taskRequest) throws Exception {
         Task taskFound = repository.findById(taskId)
                 .orElseThrow(() -> new Exception("Task not found for this id: " + taskId));
 
-        taskFound.setName(task.getName());
-        taskFound.setDescription(task.getDescription());
-        taskFound.setStatus(task.getStatus());
-        return repository.save(taskFound);
+        taskFound.setName(taskRequest.getName());
+        taskFound.setDescription(taskRequest.getDescription());
+        taskFound.setStatus(taskRequest.getStatus());
+
+        return TaskMapper.getTaskResponse(repository.save(taskFound));
     }
 
     private List<Task> filterList(List<Task> list, TaskStatus status){
