@@ -1,13 +1,15 @@
 package com.api.todolist.service.impl;
 
-import com.api.todolist.model.Task;
-import com.api.todolist.model.TaskStatus;
-import com.api.todolist.model.User;
+import com.api.todolist.entity.Task;
+import com.api.todolist.entity.TaskStatus;
+import com.api.todolist.entity.User;
 import com.api.todolist.repository.TaskRepository;
 import com.api.todolist.repository.UserRepository;
 import com.api.todolist.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +25,12 @@ public class TaskServiceImpl implements TaskService {
     private UserRepository userRepository;
 
     @Override
-    public List<Task> findByUser(Long userId, TaskStatus status) throws Exception {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("User not found for this id: " + userId));
+    public List<Task> findByUser(TaskStatus status) throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.findByUsername(currentPrincipalName)
+                .orElseThrow(() -> new Exception("User not found for this username: " + currentPrincipalName));
 
         Sort sort = Sort.by(Sort.Direction.ASC, "status");
         if(user.getAdmin().equals(Boolean.TRUE)){
@@ -35,9 +40,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task save(Task task, Long userId) throws Exception {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("User not found for this id: " + userId));
+    public Task save(Task task) throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.findByUsername(currentPrincipalName)
+                .orElseThrow(() -> new Exception("User not found for this username: " + currentPrincipalName));
 
         if (checkStatus(task.getStatus())){
             task.setStatus(TaskStatus.PENDING);

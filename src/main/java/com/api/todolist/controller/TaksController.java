@@ -1,8 +1,8 @@
 package com.api.todolist.controller;
 
 
-import com.api.todolist.model.Task;
-import com.api.todolist.model.TaskStatus;
+import com.api.todolist.entity.Task;
+import com.api.todolist.entity.TaskStatus;
 import com.api.todolist.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,17 +19,16 @@ public class TaksController{
     @Autowired
     public TaskService taskService;
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<?> getAllTasksByUser(@PathVariable(value = "id") Long userId,
-                                               @RequestParam(required = false) TaskStatus status) throws Exception {
-        List<Task> response = taskService.findByUser(userId, status);
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllTasksByUser(@RequestParam(required = false) TaskStatus status) throws Exception {
+        List<Task> response = taskService.findByUser(status);
         return response.isEmpty() ? ResponseEntity.notFound().build() :
                 ResponseEntity.ok(response);
     }
 
-    @PostMapping("/user/{id}")
-    public ResponseEntity<?> saveTask(@RequestBody Task task, @PathVariable(value = "id") Long userId) throws Exception {
-        Task response = taskService.save(task, userId);
+    @PostMapping("/user")
+    public ResponseEntity<?> saveTask(@RequestBody Task task) throws Exception {
+        Task response = taskService.save(task);
         if (response == null) ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         return ResponseEntity.accepted().body(response);
     }

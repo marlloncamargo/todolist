@@ -1,4 +1,4 @@
-package com.api.todolist.model;
+package com.api.todolist.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public class User {
     private Long id;
 
     @Column(name = "user_name", nullable = false, unique = true)
-    private String userName;
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -27,8 +27,8 @@ public class User {
     @OneToMany(targetEntity=Task.class, mappedBy="user",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks;
 
-    public User(String userName, String password, Boolean admin) {
-        this.userName = userName;
+    public User(String username, String password, Boolean admin) {
+        this.username = username;
         this.password = password;
         this.admin = admin;
     }

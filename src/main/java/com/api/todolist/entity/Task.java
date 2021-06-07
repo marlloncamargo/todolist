@@ -1,4 +1,4 @@
-package com.api.todolist.model;
+package com.api.todolist.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
