@@ -2,6 +2,7 @@ package com.api.todolist;
 
 import com.api.todolist.entity.User;
 import com.api.todolist.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+@Slf4j
 @EnableJpaAuditing
 @SpringBootApplication
 public class TodolistApplication implements CommandLineRunner {
@@ -31,6 +33,7 @@ public class TodolistApplication implements CommandLineRunner {
 		// Encode password
 		String encodedPassword = passwordEncoder.encode("123456");
 
+		log.info("Create users to use into application");
 		// Create users
 		List<User> users = List.of(
 				new User("admin", encodedPassword, Boolean.TRUE),
@@ -38,5 +41,6 @@ public class TodolistApplication implements CommandLineRunner {
 
 		// Save users into h2 database
 		repository.saveAll(users);
+		log.info("Useres Created!");
 	}
 }

@@ -10,12 +10,12 @@ public interface TaskService {
     /**
     *
      */
-    List<TaskResponse> findByUser(TaskStatus status) throws Exception;
+    List<TaskResponse> findByUser(TaskStatus status, String username) throws Exception;
 
     /**
      *
      */
-    TaskResponse save(TaskRequest task) throws Exception;
+    TaskResponse save(TaskRequest task, String username) throws Exception;
 
     /**
      *

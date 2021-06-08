@@ -1,6 +1,7 @@
 package com.api.todolist.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
 public class Task {
@@ -38,4 +40,11 @@ public class Task {
     @ManyToOne()
     @JoinColumn(name="user_id")
     private User user;
+
+    public Task(String name, String description, TaskStatus status, User user) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.user = user;
+    }
 }

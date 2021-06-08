@@ -9,15 +9,15 @@ import com.api.todolist.model.TaskResponse;
 import com.api.todolist.repository.TaskRepository;
 import com.api.todolist.repository.UserRepository;
 import com.api.todolist.service.TaskService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class TaskServiceImpl implements TaskService {
 
@@ -28,33 +28,28 @@ public class TaskServiceImpl implements TaskService {
     private UserRepository userRepository;
 
     @Override
-    public List<TaskResponse> findByUser(TaskStatus status) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-
-        User user = userRepository.findByUsername(currentPrincipalName)
-                .orElseThrow(() -> new Exception("User not found for this username: " + currentPrincipalName));
+    public List<TaskResponse> findByUser(TaskStatus status, String username) throws Exception {
+        User user = checkCurrentUser(username);
 
         Sort sort = Sort.by(Sort.Direction.ASC, "status");
         if(user.getAdmin().equals(Boolean.TRUE)){
+            log.info("Admin user found. Return all tasks");
             return TaskMapper.getTaskResponse(filterList(repository.findAll(sort), status));
         }
         return TaskMapper.getTaskResponse(filterList(repository.findByUser(user, sort), status));
     }
 
     @Override
-    public TaskResponse save(TaskRequest taskRequest) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-
-        User user = userRepository.findByUsername(currentPrincipalName)
-                .orElseThrow(() -> new Exception("User not found for this username: " + currentPrincipalName));
+    public TaskResponse save(TaskRequest taskRequest, String username) throws Exception {
+        User user = checkCurrentUser(username);
 
         if (checkStatus(taskRequest.getStatus())){
+            log.warn("Status is undefined. Set PENDING as default");
             taskRequest.setStatus(TaskStatus.PENDING);
         }
 
         Task task = TaskMapper.getTask(taskRequest, user);
+        log.info("Save task into database");
         return TaskMapper.getTaskResponse(repository.save(task));
     }
 
@@ -62,6 +57,7 @@ public class TaskServiceImpl implements TaskService {
     public void delete(Long taskId) throws Exception {
         Task task = repository.findById(taskId)
                 .orElseThrow(() -> new Exception("Task not found for this id: " + taskId));
+        log.info("Delete task into database");
         repository.delete(task);
     }
 
@@ -74,6 +70,7 @@ public class TaskServiceImpl implements TaskService {
         taskFound.setDescription(taskRequest.getDescription());
         taskFound.setStatus(taskRequest.getStatus());
 
+        log.info("Update task into database");
         return TaskMapper.getTaskResponse(repository.save(taskFound));
     }
 
@@ -88,5 +85,11 @@ public class TaskServiceImpl implements TaskService {
 
     private boolean checkStatus(TaskStatus status){
         return status != TaskStatus.COMPLETED && status != TaskStatus.PENDING;
+    }
+
+    private User checkCurrentUser(String currentPrincipalName) throws Exception {
+        log.info("Retrive user information is logged in");
+        return userRepository.findByUsername(currentPrincipalName)
+                .orElseThrow(() -> new Exception("User not found for this username: " + currentPrincipalName));
     }
 }
